@@ -1,0 +1,32 @@
+services:
+
+    ever.oneclickorder.form.configuration:
+        class: 'Ever\Oneclickorder\Form\Configuration\ConfigurationForm'
+        parent: 'form.type.translatable.aware'
+        public: true
+        arguments:
+            - '@prestashop.adapter.form.choice_provider.installed_payment_modules'
+        tags:
+            - { name: form.type }
+
+    ever.oneclickorder.form.data_configuration:
+        class: Ever\Oneclickorder\Form\Configuration\ConfigurationFormDataConfiguration
+        public: true
+        arguments: [ '@prestashop.adapter.legacy.configuration' ]
+
+    ever.oneclickorder.form.data_provider:
+        class: 'Ever\Oneclickorder\Form\Configuration\ConfigurationFormDataProvider'
+        public: true
+        arguments:
+          [ '@ever.oneclickorder.form.data_configuration' ]
+
+
+    ever.oneclickorder.form.configuration.data_handler:
+        class: 'PrestaShop\PrestaShop\Core\Form\Handler'
+        public: true
+        arguments:
+            - '@form.factory'
+            - '@prestashop.core.hook.dispatcher'
+            - '@ever.oneclickorder.form.data_provider'
+            - 'Ever\Oneclickorder\Form\Configuration\ConfigurationForm'
+            - 'ConfigurationOneClickOrder'

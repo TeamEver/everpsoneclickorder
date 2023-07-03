@@ -1,0 +1,20 @@
+{
+  "name": "ever/oneclickorder",
+  "description": "One click order module for Prestashop",
+  "type": "prestashop-module",
+  "autoload": {
+    "psr-4": {
+      "Ever\\Oneclickorder\\": "src/"
+    },
+    "config": {
+      "prepend-autoloader": false
+    }
+  },
+  "authors": [
+    {
+      "name": "Team Ever",
+      "email": "info@team-ever.com"
+    }
+  ],
+  "require": {}
+}

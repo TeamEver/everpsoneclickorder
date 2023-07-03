@@ -1,0 +1,8 @@
+ever.oneclickorder.configuration_form.index:
+    path: /oneclickorder/configuration
+    methods: [GET, POST]
+    defaults:
+        _controller: 'Ever\Oneclickorder\Controller\Admin\ModuleConfigurationController::indexAction'
+        # Needed to work with tab system
+        _legacy_controller: 'ModuleConfiguration'
+        _legacy_link: 'ModuleConfiguration'
