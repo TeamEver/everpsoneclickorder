@@ -28,7 +28,7 @@ class Everpsoneclickorder extends Module
     {
         $this->name = 'everpsoneclickorder';
         $this->author = 'Team Ever';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->ps_versions_compliancy = ['min' => '8.1.0', 'max' => _PS_VERSION_];
 
         parent::__construct();
