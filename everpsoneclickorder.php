@@ -56,8 +56,6 @@ class Everpsoneclickorder extends Module
 
     public function getContent()
     {
-        //config form to select carrier and payment method
-        //PaymentModule::getInstalledPaymentModules()
         $route = SymfonyContainer::getInstance()->get('router')->generate('ever.oneclickorder.configuration_form.index');
         Tools::redirectAdmin($route);
     }
@@ -65,17 +63,26 @@ class Everpsoneclickorder extends Module
     public function hookActionCheckoutRender(array $params)
     {
         // Check if customer has at least one address
-        if (!$this->customerHasAddress($this->context->customer->id)) {
+
+        if (Customer::getAddressesTotalById($this->context->customer->id) === 0) {
             $this->context->controller->errors[] = $this->trans('You must create at least one address before checkout', [], self::getTranslationDomain());
+            $this->context->controller->redirectWithNotifications($this->context->link->getPageLink('cart', null, $this->context->language->id, ['action' => 'show']));
         }
-        $carrier = Carrier::getCarrierByReference(Configuration::get(ConfigurationFormDataConfiguration::CL_OCO_CARRIER_REFERENCE));
-        $deliveryAddress = $this->getAddressTypeByCustomer($this->context->customer, 'delivery');
-        $invoiceAddress = $this->getAddressTypeByCustomer($this->context->customer, 'invoice');
+
+        $carrier = Carrier::getCarrierByReference(Configuration::get(ConfigurationFormDataConfiguration::EVERPS_OCO_CARRIER_REFERENCE));
+
+        list($deliveryAddress, $invoiceAddress) = $this->getAddressesByCustomer($this->context->customer);
+
+        if (!Validate::isLoadedObject($deliveryAddress) || !Validate::isLoadedObject($invoiceAddress)) {
+            $this->context->controller->errors[] = $this->trans('No addresses finded for your account', [], self::getTranslationDomain());
+            $this->context->controller->redirectWithNotifications($this->context->link->getPageLink('cart', null, $this->context->language->id, ['action' => 'show']));
+        }
+
         $this->context->cart->id_address_delivery = $deliveryAddress->id;
         $this->context->cart->id_address_invoice = $invoiceAddress->id;
         $this->context->cart->id_carrier = $carrier->id;
 
-        $paymentModuleName = Configuration::get(ConfigurationFormDataConfiguration::CL_OCO_PAYMENT_MODULE_NAME);
+        $paymentModuleName = Configuration::get(ConfigurationFormDataConfiguration::EVERPS_OCO_PAYMENT_MODULE_NAME);
         $paymentModule = Module::getInstanceByName($paymentModuleName);
 
         /** @var array<PaymentOption> $paymentOption */
@@ -109,42 +116,48 @@ class Everpsoneclickorder extends Module
     }
 
     private array $addressesForCustomer = [];
-
     /**
+     * Get delivery and invoice adresse for customer
+     *
      * @param Customer $customer
      * @param string $type delivery or invoice
      * @return Address|null
      */
-    private function getAddressTypeByCustomer(Customer $customer, string $type = 'delivery')
+    private function getAddressesByCustomer(Customer $customer)
     {
         if (count($this->addressesForCustomer) === 0) {
             $this->addressesForCustomer = $customer->getAddresses($this->context->language->id);
         }
 
-        foreach ($this->addressesForCustomer as $addressInfo) {
-            if ($addressInfo['alias'] === $type) {
-                return new Address($addressInfo['id_address']);
+        //return addresses from last order
+        if (Order::getCustomerNbOrders($customer->id) > 0) {
+            $orders = Order::getCustomerOrders($customer->id);
+
+            $lastOrder = $orders[0];
+            $lastOrder = new Order((int)$lastOrder['id_order']);
+
+            if (Validate::isLoadedObject($lastOrder)) {
+                $cart = CartCore::getCartByOrderId($lastOrder->id);
+
+                if (Validate::isLoadedObject($cart)) {
+                    return [new Address($cart->id_address_delivery), new Address($cart->id_address_invoice)];
+                }
             }
+        }
+
+        //Return the first adresse finded
+        foreach ($this->addressesForCustomer as $addressInfo) {
+            return [new Address($addressInfo['id_address']), new Address($addressInfo['id_address'])];
         }
 
         return null;
     }
 
+    /**
+     * @return string
+     */
     private static function getTranslationDomain(): string
     {
         return 'Modules.Everpsoneclickorder.Module';
-    }
-
-    /**
-     * @param int $idCustomer
-     * @return int|null
-     */
-    private function customerHasAddress($idCustomer)
-    {
-        $sql = 'SELECT id_address FROM '._DB_PREFIX_.'address
-                WHERE id_customer = ' . (int) $idCustomer.'
-                ORDER BY id_address DESC
-                LIMIT 1';
-        return Db::getInstance()->getValue($sql);
     }
 }

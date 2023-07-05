@@ -46,7 +46,7 @@ class ConfigurationForm extends TranslatorAwareType
     {
         parent::buildForm($builder, $options);
 
-        $builder->add(ConfigurationFormDataConfiguration::CL_OCO_PAYMENT_MODULE_NAME, ChoiceType::class, [
+        $builder->add(ConfigurationFormDataConfiguration::EVERPS_OCO_PAYMENT_MODULE_NAME, ChoiceType::class, [
             'label' => $this->trans('Mode de paiement', 'Admin.Actions'),
             'choices' => $this->getPaymentModuleChoices(),
             'required' => true,
@@ -57,7 +57,7 @@ class ConfigurationForm extends TranslatorAwareType
         ]);
 
         $builder
-            ->add(ConfigurationFormDataConfiguration::CL_OCO_CARRIER_REFERENCE, ChoiceType::class, [
+            ->add(ConfigurationFormDataConfiguration::EVERPS_OCO_CARRIER_REFERENCE, ChoiceType::class, [
                 'label' => $this->trans('Mode de livraison', 'Admin.Actions'),
                 'choices' => $this->getCarriersChoices(),
                 'required' => true,

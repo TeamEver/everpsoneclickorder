@@ -26,9 +26,9 @@ use PrestaShop\PrestaShop\Core\ConfigurationInterface;
 class ConfigurationFormDataConfiguration implements DataConfigurationInterface
 {
 
-    public const CL_OCO_CARRIER_REFERENCE = 'CL_OCO_CARRIER_REFERENCE';
+    public const EVERPS_OCO_CARRIER_REFERENCE = 'EVERPS_OCO_CARRIER_REFERENCE';
 
-    public const CL_OCO_PAYMENT_MODULE_NAME = 'CL_OCO_PAYMENT_MODULE_NAME';
+    public const EVERPS_OCO_PAYMENT_MODULE_NAME = 'EVERPS_OCO_PAYMENT_MODULE_NAME';
     private ConfigurationInterface $configuration;
 
     public function __construct(ConfigurationInterface $configuration)
@@ -39,15 +39,15 @@ class ConfigurationFormDataConfiguration implements DataConfigurationInterface
     public function getConfiguration(): array
     {
         return [
-            self::CL_OCO_CARRIER_REFERENCE => $this->configuration->get(self::CL_OCO_CARRIER_REFERENCE),
-            self::CL_OCO_PAYMENT_MODULE_NAME => $this->configuration->get(self::CL_OCO_PAYMENT_MODULE_NAME),
+            self::EVERPS_OCO_CARRIER_REFERENCE => $this->configuration->get(self::EVERPS_OCO_CARRIER_REFERENCE),
+            self::EVERPS_OCO_PAYMENT_MODULE_NAME => $this->configuration->get(self::EVERPS_OCO_PAYMENT_MODULE_NAME),
         ];
     }
 
     public function updateConfiguration(array $configuration): void
     {
-        $this->configuration->set(self::CL_OCO_CARRIER_REFERENCE, $configuration[self::CL_OCO_CARRIER_REFERENCE]);
-        $this->configuration->set(self::CL_OCO_PAYMENT_MODULE_NAME, $configuration[self::CL_OCO_PAYMENT_MODULE_NAME]);
+        $this->configuration->set(self::EVERPS_OCO_CARRIER_REFERENCE, $configuration[self::EVERPS_OCO_CARRIER_REFERENCE]);
+        $this->configuration->set(self::EVERPS_OCO_PAYMENT_MODULE_NAME, $configuration[self::EVERPS_OCO_PAYMENT_MODULE_NAME]);
     }
 
     public function validateConfiguration(array $configuration): bool
