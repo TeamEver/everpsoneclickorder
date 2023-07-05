@@ -64,10 +64,13 @@ class Everpsoneclickorder extends Module
 
     public function hookActionCheckoutRender(array $params)
     {
+        // Check if customer has at least one address
+        if (!$this->customerHasAddress($this->context->customer->id)) {
+            $this->context->controller->errors[] = $this->trans('You must create at least one address before checkout', [], self::getTranslationDomain());
+        }
         $carrier = Carrier::getCarrierByReference(Configuration::get(ConfigurationFormDataConfiguration::CL_OCO_CARRIER_REFERENCE));
         $deliveryAddress = $this->getAddressTypeByCustomer($this->context->customer, 'delivery');
         $invoiceAddress = $this->getAddressTypeByCustomer($this->context->customer, 'invoice');
-
         $this->context->cart->id_address_delivery = $deliveryAddress->id;
         $this->context->cart->id_address_invoice = $invoiceAddress->id;
         $this->context->cart->id_carrier = $carrier->id;
