@@ -131,4 +131,17 @@ class Everpsoneclickorder extends Module
     {
         return 'Modules.Everpsoneclickorder.Module';
     }
+
+    /**
+     * @param int $idCustomer
+     * @return int|null
+     */
+    private function customerHasAddress($idCustomer)
+    {
+        $sql = 'SELECT id_address FROM '._DB_PREFIX_.'address
+                WHERE id_customer = ' . (int) $idCustomer.'
+                ORDER BY id_address DESC
+                LIMIT 1';
+        return Db::getInstance()->getValue($sql);
+    }
 }
